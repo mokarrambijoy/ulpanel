@@ -1,14 +1,77 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Telegram Mini App</title>
+  <meta charset="UTF-8" />
+  <title>Bijoy VPN Panel</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #fff;
+    }
+    .container {
+      padding: 16px;
+    }
+    .card {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: #3b82f6;
+      color: white;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+  </style>
 </head>
+
 <body>
-  <h2>Mini App Live ✅</h2>
+  <div class="container">
+
+    <div class="card">
+      <div class="title">Bijoy VPN Panel</div>
+      <div id="userInfo">Loading user info...</div>
+    </div>
+
+    <div class="card">
+      <button class="btn">Buy VPN</button>
+      <button class="btn" style="background:#22c55e;">My Account</button>
+    </div>
+
+  </div>
 
   <script>
-    Telegram.WebApp.ready();
+    const tg = window.Telegram.WebApp;
+    tg.ready();
+
+    const user = tg.initDataUnsafe.user;
+
+    if (user) {
+      document.getElementById("userInfo").innerHTML = `
+        <p><b>ID:</b> ${user.id}</p>
+        <p><b>Name:</b> ${user.first_name}</p>
+        <p><b>Username:</b> @${user.username || "N/A"}</p>
+      `;
+    } else {
+      document.getElementById("userInfo").innerText = "User data not available";
+    }
   </script>
 </body>
 </html>
