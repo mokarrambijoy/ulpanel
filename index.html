@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Bijoy VPN Panel</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
   <style>
@@ -14,9 +13,7 @@
       background: #0f172a;
       color: white;
     }
-    .box {
-      padding: 16px;
-    }
+    .box { padding: 16px; }
     .card {
       background: #1e293b;
       padding: 16px;
@@ -33,44 +30,117 @@
       background: #3b82f6;
       color: white;
     }
+    .green { background:#22c55e; }
+    .red { background:#ef4444; }
+    .hidden { display:none; }
   </style>
 </head>
 
 <body>
-  <div class="box">
+<div class="box">
 
-    <div class="card">
-      <h3>Bijoy VPN Panel</h3>
-      <div id="user">Loading user...</div>
-    </div>
-
-    <div class="card">
-      <button onclick="buy()">Buy VPN</button>
-      <button onclick="account()" style="background:#22c55e;">My Account</button>
-    </div>
-
+  <!-- USER INFO -->
+  <div class="card">
+    <h3>Bijoy VPN Panel</h3>
+    <div id="userInfo">Loading...</div>
   </div>
 
-  <script>
-    const tg = window.Telegram.WebApp;
-    tg.ready();
+  <!-- MAIN MENU -->
+  <div class="card" id="menu">
+    <button onclick="showPackages()">Buy VPN</button>
+    <button class="green" onclick="showAccount()">My Account</button>
+  </div>
 
-    const user = tg.initDataUnsafe.user;
+  <!-- PACKAGE LIST -->
+  <div class="card hidden" id="packages">
+    <h4>Select Package</h4>
+    <button onclick="buyPkg('1 Month', 200)">1 Month – ৳200</button>
+    <button onclick="buyPkg('3 Month', 500)">3 Month – ৳500</button>
+    <button onclick="buyPkg('6 Month', 900)">6 Month – ৳900</button>
+    <button class="red" onclick="back()">Back</button>
+  </div>
 
-    if (user) {
-      document.getElementById("user").innerHTML =
-        "👤 " + user.first_name + "<br>ID: " + user.id;
-    } else {
-      document.getElementById("user").innerText = "User not detected";
+  <!-- ACCOUNT -->
+  <div class="card hidden" id="account">
+    <h4>My Account</h4>
+    <p>Status: Active</p>
+    <p>Package: Demo</p>
+    <p>Expiry: Not Set</p>
+    <button class="red" onclick="back()">Back</button>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div class="card hidden" id="admin">
+    <h4>Admin Panel</h4>
+    <p>Admin Access Granted</p>
+    <button onclick="sendAdmin('users')">User List</button>
+    <button onclick="sendAdmin('add_days')">Add Days</button>
+    <button onclick="sendAdmin('block')">Block User</button>
+    <button class="red" onclick="back()">Back</button>
+  </div>
+
+</div>
+
+<script>
+  const tg = window.Telegram.WebApp;
+  tg.ready();
+
+  const ADMIN_ID = 7953212628; // 👈 আপনার Telegram ID
+  const user = tg.initDataUnsafe.user;
+
+  if (user) {
+    document.getElementById("userInfo").innerHTML =
+      "👤 " + user.first_name + "<br>ID: " + user.id;
+    if (user.id === ADMIN_ID) {
+      document.getElementById("menu").innerHTML +=
+        `<button class="red" onclick="showAdmin()">Admin Panel</button>`;
     }
+  }
 
-    function buy() {
-      tg.showAlert("Buy VPN clicked");
-    }
+  function hideAll() {
+    document.querySelectorAll('.card').forEach(e=>e.classList.add('hidden'));
+    document.querySelector('.card').classList.remove('hidden');
+  }
 
-    function account() {
-      tg.showAlert("My Account clicked");
-    }
-  </script>
+  function back() {
+    hideAll();
+    document.getElementById("menu").classList.remove("hidden");
+  }
+
+  function showPackages() {
+    hideAll();
+    document.getElementById("packages").classList.remove("hidden");
+  }
+
+  function showAccount() {
+    hideAll();
+    document.getElementById("account").classList.remove("hidden");
+  }
+
+  function showAdmin() {
+    hideAll();
+    document.getElementById("admin").classList.remove("hidden");
+  }
+
+  function buyPkg(pkg, price) {
+    tg.sendData(JSON.stringify({
+      action: "buy",
+      package: pkg,
+      price: price,
+      user_id: user.id
+    }));
+    tg.close();
+  }
+
+  function sendAdmin(action) {
+    tg.sendData(JSON.stringify({
+      action: action,
+      admin: true,
+      user_id: user.id
+    }));
+    tg.close();
+  }
+</script>
+
 </body>
 </html>
